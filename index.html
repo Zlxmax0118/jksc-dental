@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>金坤尚城社区卫生服务中心 · 口腔智能助手</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -45,16 +45,6 @@ body {
   font-size: 11px;
   backdrop-filter: blur(4px);
 }
-#chat-container {
-  width: 100%;
-  max-width: 480px;
-  height: 60vh;
-  min-height: 400px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-  background: #fff;
-}
 .footer {
   margin-top: 16px;
   text-align: center;
@@ -78,8 +68,6 @@ body {
   <span class="badge">政府监管</span>
 </div>
 
-<div id="chat-container"></div>
-
 <div class="footer">
   本助手仅提供健康科普参考，不构成医疗诊断<br>
   如有紧急情况请直接到院就诊
@@ -93,15 +81,11 @@ new CozeWebSDK.WebChatClient({
   },
   componentProps: {
     title: '金坤尚城口腔助手',
-    layout: 'mobile',
   },
   auth: {
     type: 'token',
     token: 'pat_FnYcofuLIAqG5E2y5XdbKXTK3EV3d1CmRR1AKsxZIzHaqeG9UIs4IOfKMaxwg4AB',
     onRefreshToken: function () { return 'pat_FnYcofuLIAqG5E2y5XdbKXTK3EV3d1CmRR1AKsxZIzHaqeG9UIs4IOfKMaxwg4AB' }
-  },
-  chatBot: {
-    el: document.getElementById('chat-container'),
   }
 });
 </script>
