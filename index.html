@@ -75,18 +75,20 @@ body {
 
 <script src="https://lf-cdn.coze.cn/obj/unpkg/latest/coze/web-sdk/dist/js-umd/index.min.js"></script>
 <script>
-new CozeWebSDK.WebChatClient({
-  config: {
-    bot_id: '7647024872517894187',
-  },
-  componentProps: {
-    title: '金坤尚城口腔助手',
-  },
-  auth: {
-    type: 'token',
-    token: 'pat_FnYcofuLIAqG5E2y5XdbKXTK3EV3d1CmRR1AKsxZIzHaqeG9UIs4IOfKMaxwg4AB',
-    onRefreshToken: function () { return 'pat_FnYcofuLIAqG5E2y5XdbKXTK3EV3d1CmRR1AKsxZIzHaqeG9UIs4IOfKMaxwg4AB' }
-  }
+window.addEventListener('DOMContentLoaded', function() {
+  new CozeWebSDK.WebChatClient({
+    config: {
+      bot_id: '7647024872517894187',
+    },
+    componentProps: {
+      title: '金坤尚城口腔助手',
+    },
+    auth: {
+      type: 'token',
+      token: 'pat_FnYcofuLIAqG5E2y5XdbKXTK3EV3d1CmRR1AKsxZIzHaqeG9UIs4IOfKMaxwg4AB',
+      onRefreshToken: function () { return 'pat_FnYcofuLIAqG5E2y5XdbKXTK3EV3d1CmRR1AKsxZIzHaqeG9UIs4IOfKMaxwg4AB' }
+    }
+  });
 });
 </script>
 
