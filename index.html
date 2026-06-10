@@ -52,6 +52,22 @@ body {
   font-size: 11px;
   line-height: 1.6;
 }
+#debug {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0,0,0,0.9);
+  color: #0f0;
+  font-size: 12px;
+  padding: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 99999;
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
 </style>
 </head>
 <body>
@@ -73,25 +89,65 @@ body {
   如有紧急情况请直接到院就诊
 </div>
 
-<script src="https://lf-cdn.coze.cn/obj/unpkg/latest/coze/web-sdk/dist/js-umd/index.min.js"></script>
+<div id="debug">加载中...</div>
+
 <script>
-// SDK导出的全局变量是cozeWebSDK（小写c），不是CozeWebSDK
+var dbg = document.getElementById('debug');
+var info = [];
+
+function log(s) {
+  info.push(s);
+  dbg.textContent = info.join('\n');
+}
+
+window.onerror = function(m,u,l) { log('ERR: ' + m + ' L' + l); };
+</script>
+
+<script src="https://lf-cdn.coze.cn/obj/unpkg/latest/coze/web-sdk/dist/js-umd/index.min.js"></script>
+
+<script>
+log('1. SDK脚本标签执行完毕');
+log('2. window.cozeWebSDK = ' + typeof window.cozeWebSDK);
+log('3. window.CozeWebSDK = ' + typeof window.CozeWebSDK);
+log('4. Object.keys on global: ' + Object.keys(window).filter(function(k){return k.toLowerCase().indexOf('coze')>=0}).join(', '));
+
 var SDK = window.cozeWebSDK || window.CozeWebSDK;
-new SDK.WebChatClient({
-  config: {
-    bot_id: '7647024872517894187',
-  },
-  auth: {
-    type: 'token',
-    token: 'pat_9mx0ACrpyU7LUg9l4A0bJsdxqh1L5RRDmfEJ7eY2mZQoU5PSP4JVR8GDNfAYDX1W',
-    onRefreshToken: function () { return 'pat_9mx0ACrpyU7LUg9l4A0bJsdxqh1L5RRDmfEJ7eY2mZQoU5PSP4JVR8GDNfAYDX1W' }
-  },
-  ui: {
-    asstBtn: {
-      isNeed: true
-    }
+
+if (!SDK) {
+  log('5. SDK没找到! 尝试检查脚本内容...');
+} else {
+  log('5. SDK找到了! keys=' + Object.keys(SDK).join(', '));
+  try {
+    var client = new SDK.WebChatClient({
+      config: {
+        bot_id: '7647024872517894187',
+      },
+      auth: {
+        type: 'token',
+        token: 'pat_9mx0ACrpyU7LUg9l4A0bJsdxqh1L5RRDmfEJ7eY2mZQoU5PSP4JVR8GDNfAYDX1W',
+        onRefreshToken: function () { return 'pat_9mx0ACrpyU7LUg9l4A0bJsdxqh1L5RRDmfEJ7eY2mZQoU5PSP4JVR8GDNfAYDX1W' }
+      },
+      ui: {
+        asstBtn: {
+          isNeed: true
+        }
+      }
+    });
+    log('6. WebChatClient创建成功');
+    
+    setTimeout(function() {
+      var iframes = document.querySelectorAll('iframe');
+      log('7. iframe数量=' + iframes.length);
+      for (var i = 0; i < iframes.length; i++) {
+        log('   iframe['+i+'] src=' + iframes[i].src);
+      }
+      var btns = document.querySelectorAll('[class*="coze"], [id*="coze"]');
+      log('8. coze元素数量=' + btns.length);
+    }, 3000);
+  } catch(e) {
+    log('6. 创建失败: ' + e.message);
   }
-});
+}
 </script>
 
 </body>
