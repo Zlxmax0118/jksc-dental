@@ -52,11 +52,21 @@ body {
   font-size: 11px;
   line-height: 1.6;
 }
-.hint {
-  margin-top: 12px;
-  text-align: center;
-  color: rgba(255,255,255,0.9);
-  font-size: 13px;
+#debug {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.8);
+  color: #0f0;
+  font-size: 11px;
+  padding: 8px;
+  border-radius: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 99999;
+  display: none;
+  font-family: monospace;
 }
 </style>
 </head>
@@ -74,30 +84,76 @@ body {
   <span class="badge">政府监管</span>
 </div>
 
-<div class="hint">👇 点击右下角气泡开始咨询</div>
-
 <div class="footer">
   本助手仅提供健康科普参考，不构成医疗诊断<br>
   如有紧急情况请直接到院就诊
 </div>
 
-<script src="https://lf-cdn.coze.cn/obj/unpkg/latest/coze/web-sdk/dist/js-umd/index.min.js"></script>
+<div id="debug"></div>
+
 <script>
-new CozeWebSDK.WebChatClient({
-  config: {
-    bot_id: '7647024872517894187',
-  },
-  auth: {
-    type: 'token',
-    token: 'pat_9mx0ACrpyU7LUg9l4A0bJsdxqh1L5RRDmfEJ7eY2mZQoU5PSP4JVR8GDNfAYDX1W',
-    onRefreshToken: function () { return 'pat_9mx0ACrpyU7LUg9l4A0bJsdxqh1L5RRDmfEJ7eY2mZQoU5PSP4JVR8GDNfAYDX1W' }
-  },
-  ui: {
-    asstBtn: {
-      isNeed: true
-    }
+var debugEl = document.getElementById('debug');
+var logs = [];
+function log(msg) {
+  logs.push(msg);
+  debugEl.textContent = logs.join('\n');
+  debugEl.style.display = 'block';
+  console.log('[DEBUG]', msg);
+}
+
+log('页面加载开始');
+
+// 捕获全局错误
+window.onerror = function(msg, url, line, col, err) {
+  log('ERROR: ' + msg + ' (line ' + line + ')');
+};
+</script>
+
+<script src="https://lf-cdn.coze.cn/obj/unpkg/latest/coze/web-sdk/dist/js-umd/index.min.js"
+  onload="log('SDK脚本加载成功, CozeWebSDK=' + (typeof CozeWebSDK !== 'undefined' ? 'OK' : 'UNDEFINED'))"
+  onerror="log('SDK脚本加载失败!')"></script>
+
+<script>
+log('开始初始化...');
+
+try {
+  if (typeof CozeWebSDK === 'undefined') {
+    log('CozeWebSDK未定义，SDK加载失败');
+  } else if (typeof CozeWebSDK.WebChatClient === 'undefined') {
+    log('WebChatClient未定义');
+  } else {
+    log('正在创建WebChatClient...');
+    var client = new CozeWebSDK.WebChatClient({
+      config: {
+        bot_id: '7647024872517894187',
+      },
+      auth: {
+        type: 'token',
+        token: 'pat_9mx0ACrpyU7LUg9l4A0bJsdxqh1L5RRDmfEJ7eY2mZQoU5PSP4JVR8GDNfAYDX1W',
+        onRefreshToken: function () { return 'pat_9mx0ACrpyU7LUg9l4A0bJsdxqh1L5RRDmfEJ7eY2mZQoU5PSP4JVR8GDNfAYDX1W' }
+      },
+      ui: {
+        asstBtn: {
+          isNeed: true
+        }
+      }
+    });
+    log('WebChatClient创建完成: ' + JSON.stringify(typeof client));
+    
+    // 检查iframe是否被创建
+    setTimeout(function() {
+      var iframes = document.querySelectorAll('iframe');
+      log('页面iframe数量: ' + iframes.length);
+      for (var i = 0; i < iframes.length; i++) {
+        log('iframe[' + i + '] src: ' + iframes[i].src);
+      }
+    }, 3000);
   }
-});
+} catch(e) {
+  log('初始化异常: ' + e.message);
+}
+
+log('初始化代码执行完毕');
 </script>
 
 </body>
