@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>金坤尚城社区卫生服务中心 · 口腔智能助手</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -52,6 +52,12 @@ body {
   font-size: 11px;
   line-height: 1.6;
 }
+.hint {
+  margin-top: 12px;
+  text-align: center;
+  color: rgba(255,255,255,0.9);
+  font-size: 13px;
+}
 </style>
 </head>
 <body>
@@ -68,6 +74,8 @@ body {
   <span class="badge">政府监管</span>
 </div>
 
+<div class="hint">👇 点击右下角气泡开始咨询</div>
+
 <div class="footer">
   本助手仅提供健康科普参考，不构成医疗诊断<br>
   如有紧急情况请直接到院就诊
@@ -75,20 +83,20 @@ body {
 
 <script src="https://lf-cdn.coze.cn/obj/unpkg/latest/coze/web-sdk/dist/js-umd/index.min.js"></script>
 <script>
-window.addEventListener('DOMContentLoaded', function() {
-  new CozeWebSDK.WebChatClient({
-    config: {
-      bot_id: '7647024872517894187',
-    },
-    componentProps: {
-      title: '金坤尚城口腔助手',
-    },
-    auth: {
-      type: 'token',
-      token: 'pat_FnYcofuLIAqG5E2y5XdbKXTK3EV3d1CmRR1AKsxZIzHaqeG9UIs4IOfKMaxwg4AB',
-      onRefreshToken: function () { return 'pat_FnYcofuLIAqG5E2y5XdbKXTK3EV3d1CmRR1AKsxZIzHaqeG9UIs4IOfKMaxwg4AB' }
+new CozeWebSDK.WebChatClient({
+  config: {
+    bot_id: '7647024872517894187',
+  },
+  auth: {
+    type: 'token',
+    token: 'pat_9mx0ACrpyU7LUg9l4A0bJsdxqh1L5RRDmfEJ7eY2mZQoU5PSP4JVR8GDNfAYDX1W',
+    onRefreshToken: function () { return 'pat_9mx0ACrpyU7LUg9l4A0bJsdxqh1L5RRDmfEJ7eY2mZQoU5PSP4JVR8GDNfAYDX1W' }
+  },
+  ui: {
+    asstBtn: {
+      isNeed: true
     }
-  });
+  }
 });
 </script>
 
