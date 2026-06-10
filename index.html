@@ -75,9 +75,23 @@ body {
 
 <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.20/libs/cn/index.js"></script>
 <script>
+// 每个访客生成唯一ID，存localStorage，同一设备同一人保持连续对话
+// 清除浏览器数据或换设备 = 全新对话
+function getOrCreateUserId() {
+  let uid = localStorage.getItem('coze_dental_uid');
+  if (!uid) {
+    uid = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('coze_dental_uid', uid);
+  }
+  return uid;
+}
+
+var userId = getOrCreateUserId();
+
 new CozeWebSDK.WebChatClient({
   config: {
     bot_id: '7647024872517894187',
+    user_id: userId,
   },
   componentProps: {
     title: '金坤尚城口腔助手',
