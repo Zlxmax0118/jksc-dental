@@ -507,6 +507,27 @@ initChat();
 </script>
 
 
+<!-- Source Tracking -->
+<script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var src = params.get('src') || 'direct';
+  var visits = JSON.parse(localStorage.getItem('jksc_visits') || '[]');
+  // Only log if this source hasn't been logged in this session
+  if (!sessionStorage.getItem('src_logged')) {
+    visits.push({
+      time: new Date().toISOString(),
+      source: src,
+      screen: screen.width + 'x' + screen.height
+    });
+    localStorage.setItem('jksc_visits', JSON.stringify(visits));
+    sessionStorage.setItem('src_logged', '1');
+  }
+  // Make source available globally
+  window.__visitSource = src;
+})();
+</script>
+
 <!-- Visit Tracking & Counter -->
 <script>
 (function() {
