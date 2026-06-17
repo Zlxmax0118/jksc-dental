@@ -321,8 +321,20 @@ div[id^="coze-web-chat"] button,
 div[class*="coze"] button[class*="btn"],
 div[class*="coze"] div[class*="bubble"],
 div[class*="coze"] div[class*="trigger"] {
-  transform: scale(1.4) !important;
+  transform: scale(1.8) !important;
   transform-origin: center center !important;
+}
+/* 把SDK底部的Powered by coze英文改小/换色 */
+div[class*="coze"] [class*="powered"],
+div[class*="coze"] [class*="footer"],
+div[class*="coze"] span[class*="powered"] {
+  font-size: 0 !important;
+}
+div[class*="coze"] [class*="powered"]::after,
+div[class*="coze"] [class*="footer"]::after {
+  content: "由AI提供参考建议，不构成医疗诊断";
+  font-size: 11px !important;
+  color: #999 !important;
 }
 
 </style>
@@ -489,6 +501,7 @@ function initChat() {
       },
       componentProps: {
         title: '金坤尚城口腔助手',
+        inputPlaceholder: '请输入您的问题...',
       },
       auth: {
         type: 'token',
