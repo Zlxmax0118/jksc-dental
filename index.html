@@ -586,5 +586,50 @@ initChat();
 })();
 </script>
 
+
+<!-- 预约表单模态框 -->
+<div id="bookingModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center;">
+  <div style="background:white;border-radius:16px;padding:24px;width:90%;max-width:400px;position:relative;">
+    <button onclick="closeBooking()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:22px;color:#999;cursor:pointer;">✕</button>
+    <h3 style="text-align:center;color:#1A5276;margin:0 0 16px;">📋 在线预约</h3>
+    <form id="bookingForm" action="https://formsubmit.co/529548316@qq.com" method="POST">
+      <input type="hidden" name="_subject" value="金坤尚城口腔-新预约通知">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_next" value="https://jksc-dental.surge.sh">
+      <input type="text" name="姓名" placeholder="您的称呼" required style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;margin-bottom:10px;font-size:15px;box-sizing:border-box;">
+      <input type="tel" name="电话" placeholder="手机号码" required pattern="[0-9]{11}" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;margin-bottom:10px;font-size:15px;box-sizing:border-box;">
+      <input type="text" name="期望时间" placeholder="期望就诊时间（如：明天上午10点）" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;margin-bottom:10px;font-size:15px;box-sizing:border-box;">
+      <select name="需求" style="width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;margin-bottom:16px;font-size:15px;box-sizing:border-box;color:#333;">
+        <option value="">选择就诊需求</option>
+        <option value="洗牙">洗牙</option>
+        <option value="补牙">补牙</option>
+        <option value="拔牙">拔牙</option>
+        <option value="种植牙">种植牙</option>
+        <option value="牙齿矫正">牙齿矫正</option>
+        <option value="儿童看牙">儿童看牙</option>
+        <option value="其他">其他</option>
+      </select>
+      <button type="submit" style="width:100%;padding:12px;background:#2E86C1;color:white;border:none;border-radius:8px;font-size:16px;cursor:pointer;">确认预约</button>
+    </form>
+    <p style="text-align:center;color:#999;font-size:12px;margin-top:10px;">提交后我们会电话确认，免费初诊</p>
+  </div>
+</div>
+
+<!-- 预约按钮 - 浮动在页面右下角 -->
+<a id="bookingBtn" onclick="openBooking()" style="position:fixed;bottom:80px;right:16px;background:#2E86C1;color:white;padding:10px 18px;border-radius:24px;font-size:14px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.2);z-index:9998;cursor:pointer;">📋 快速预约</a>
+
+<script>
+function openBooking(){
+  document.getElementById('bookingModal').style.display='flex';
+}
+function closeBooking(){
+  document.getElementById('bookingModal').style.display='none';
+}
+document.getElementById('bookingModal').addEventListener('click',function(e){
+  if(e.target===this)closeBooking();
+});
+</script>
+
 </body>
 </html>
