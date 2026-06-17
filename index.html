@@ -338,6 +338,14 @@ div[class*="coze"] [class*="footer"]::after {
 }
 
 </style>
+
+<style>
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+</style>
+
 </head>
 <body>
 
@@ -525,6 +533,56 @@ function initChat() {
 }
 
 initChat();
+</script>
+
+
+<!-- Visit Tracking & Counter -->
+<script>
+(function() {
+  // Track visit via Coze SDK (auto-creates conversation on page load)
+  var visitLogged = false;
+  
+  function logVisit() {
+    if (visitLogged) return;
+    visitLogged = true;
+    
+    try {
+      // Use sendBeacon to log visit to a simple endpoint
+      // We use the page's own tracking mechanism
+      var data = {
+        time: new Date().toISOString(),
+        screen: screen.width + 'x' + screen.height,
+        lang: navigator.language,
+        ref: document.referrer ? document.referrer.substring(0, 100) : 'direct'
+      };
+      
+      // Store in localStorage for our counter
+      var visits = JSON.parse(localStorage.getItem('jksc_visits') || '[]');
+      var today = new Date().toDateString();
+      var alreadyLogged = visits.some(function(v) { return v.date === today; });
+      
+      if (!alreadyLogged) {
+        visits.push({date: today, time: data.time});
+        localStorage.setItem('jksc_visits', JSON.stringify(visits));
+      }
+    } catch(e) {}
+  }
+  
+  // Update counter from GitHub
+  try {
+    fetch('https://raw.githubusercontent.com/Zlxmax0118/jksc-dental/main/visits.json')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var el = document.getElementById('visitCounter');
+        if (el && d.count > 0) {
+          el.innerHTML = '已有 <strong style="color:#1e40af;">' + d.count + '</strong> 人使用口腔自测';
+        }
+      })
+      .catch(function() {});
+  } catch(e) {}
+  
+  logVisit();
+})();
 </script>
 
 </body>
