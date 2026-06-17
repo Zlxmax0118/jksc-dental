@@ -393,18 +393,58 @@ setTimeout(function() {
   document.getElementById('loadingOverlay').classList.add('hidden');
 }, 15000);
 
-// 清除Coze SDK缓存的对话历史，确保每次打开都是新对话
-(function clearCozeCache() {
-  var keysToRemove = [];
+// 彻底清除Coze SDK所有缓存，确保每次打开都是新对话
+(function clearAllCozeCache() {
+  // 1. 清除localStorage中所有coze相关
+  var lsKeys = [];
   for (var i = 0; i < localStorage.length; i++) {
     var key = localStorage.key(i);
-    if (key && key.indexOf('coze') !== -1) {
-      keysToRemove.push(key);
+    if (key && (key.indexOf('coze') !== -1 || key.indexOf('Coze') !== -1 || key.indexOf('chat') !== -1 || key.indexOf('conversation') !== -1)) {
+      lsKeys.push(key);
     }
   }
-  keysToRemove.forEach(function(k) { localStorage.removeItem(k); });
-  // 同时清除旧的用户ID，强制生成新的
+  lsKeys.forEach(function(k) { localStorage.removeItem(k); });
   localStorage.removeItem('coze_dental_uid');
+
+  // 2. 清除sessionStorage中所有coze相关
+  var ssKeys = [];
+  for (var i = 0; i < sessionStorage.length; i++) {
+    var key = sessionStorage.key(i);
+    if (key && (key.indexOf('coze') !== -1 || key.indexOf('Coze') !== -1)) {
+      ssKeys.push(key);
+    }
+  }
+  ssKeys.forEach(function(k) { sessionStorage.removeItem(k); });
+
+  // 3. 清除IndexedDB中coze相关数据库
+  if (window.indexedDB && window.indexedDB.databases) {
+    window.indexedDB.databases().then(function(dbs) {
+      dbs.forEach(function(db) {
+        if (db.name && (db.name.indexOf('coze') !== -1 || db.name.indexOf('Coze') !== -1)) {
+          window.indexedDB.deleteDatabase(db.name);
+        }
+      });
+    }).catch(function(){});
+  }
+
+  // 4. 清除Cache API中coze相关缓存
+  if (window.caches && window.caches.keys) {
+    caches.keys().then(function(names) {
+      names.forEach(function(name) {
+        if (name.indexOf('coze') !== -1 || name.indexOf('Coze') !== -1) {
+          caches.delete(name);
+        }
+      });
+    }).catch(function(){});
+  }
+
+  // 5. 清除所有cookie中的coze相关
+  document.cookie.split(';').forEach(function(c) {
+    var name = c.trim().split('=')[0];
+    if (name.indexOf('coze') !== -1 || name.indexOf('Coze') !== -1) {
+      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+    }
+  });
 })();
 </script>
 
@@ -413,10 +453,10 @@ setTimeout(function() {
   onerror="document.getElementById('fallbackBtn').style.display='inline-block';document.getElementById('loadingOverlay').classList.add('hidden');"
 ></script>
 <script>
-// 每次访问生成全新用户ID，确保新对话
+// 每次访问生成全新用户ID，确保新对话（绝不复用旧ID）
 function createNewUserId() {
-  var uid = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-  localStorage.setItem('coze_dental_uid', uid);
+  var uid = 'v_' + Date.now() + '_' + Math.random().toString(36).substr(2, 12);
+  // 不存localStorage，防止SDK用旧ID找回历史
   return uid;
 }
 
