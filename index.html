@@ -392,31 +392,41 @@ loadingTimeout = setTimeout(function() {
 setTimeout(function() {
   document.getElementById('loadingOverlay').classList.add('hidden');
 }, 15000);
+
+// 清除Coze SDK缓存的对话历史，确保每次打开都是新对话
+(function clearCozeCache() {
+  var keysToRemove = [];
+  for (var i = 0; i < localStorage.length; i++) {
+    var key = localStorage.key(i);
+    if (key && key.indexOf('coze') !== -1) {
+      keysToRemove.push(key);
+    }
+  }
+  keysToRemove.forEach(function(k) { localStorage.removeItem(k); });
+  // 同时清除旧的用户ID，强制生成新的
+  localStorage.removeItem('coze_dental_uid');
+})();
 </script>
 
 <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.20/libs/cn/index.js"
   onload="sdkLoaded=true;clearTimeout(loadingTimeout);"
-  onerror="document.getElementById('fallbackBtn').style.display='inline-block';document.getElementById('loadingOverlay').classList.add('hidden');">
-</script>
+  onerror="document.getElementById('fallbackBtn').style.display='inline-block';document.getElementById('loadingOverlay').classList.add('hidden');"
+></script>
 <script>
-// 每个访客生成唯一ID
-function getOrCreateUserId() {
-  let uid = localStorage.getItem('coze_dental_uid');
-  if (!uid) {
-    uid = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('coze_dental_uid', uid);
-  }
+// 每次访问生成全新用户ID，确保新对话
+function createNewUserId() {
+  var uid = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  localStorage.setItem('coze_dental_uid', uid);
   return uid;
 }
 
 function initChat() {
   if (typeof CozeWebSDK === 'undefined' || !CozeWebSDK.WebChatClient) {
-    // SDK没加载完，1秒后重试
     setTimeout(initChat, 1000);
     return;
   }
   
-  var userId = getOrCreateUserId();
+  var userId = createNewUserId();
   
   try {
     new CozeWebSDK.WebChatClient({
@@ -441,10 +451,8 @@ function initChat() {
       }
     });
     
-    // 隐藏加载动画
     document.getElementById('loadingOverlay').classList.add('hidden');
   } catch(e) {
-    // 初始化失败，显示降级按钮
     document.getElementById('fallbackBtn').style.display = 'inline-block';
     document.getElementById('loadingOverlay').classList.add('hidden');
   }
