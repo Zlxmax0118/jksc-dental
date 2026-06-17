@@ -1,0 +1,33 @@
+
+<!-- Visit Tracking -->
+<script>
+(function() {
+  try {
+    var visitData = {
+      t: new Date().toISOString(),
+      ua: navigator.userAgent.substring(0, 120),
+      lang: navigator.language,
+      screen: screen.width + 'x' + screen.height,
+      ref: document.referrer ? document.referrer.substring(0, 200) : 'direct',
+      url: window.location.href
+    };
+    
+    // Send visit data via Coze API as a silent tracking log
+    var payload = {
+      bot_id: '7647024872517894187',
+      user_id: 'track_' + Date.now(),
+      stream: false,
+      auto_save_history: true,
+      additional_messages: [{
+        role: 'user',
+        content: '[访问记录] ' + JSON.stringify(visitData),
+        content_type: 'text'
+      }]
+    };
+    
+    // Use sendBeacon for reliability (works even if page is closed)
+    var blob = new Blob([JSON.stringify(payload)], {type: 'application/json'});
+    navigator.sendBeacon('https://api.coze.cn/v3/chat?pat=pat_9mx0ACrpyU7LUg9l4A0bJsdxqh1L5RRDmfEJ7eY2mZQoU5PSP4JVR8GDNfAYDX1W', blob);
+  } catch(e) {}
+})();
+</script>
