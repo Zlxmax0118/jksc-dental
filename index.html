@@ -321,7 +321,7 @@ div[id^="coze-web-chat"] button,
 div[class*="coze"] button[class*="btn"],
 div[class*="coze"] div[class*="bubble"],
 div[class*="coze"] div[class*="trigger"] {
-  transform: scale(1.8) !important;
+  transform: scale(1.5) !important;
   transform-origin: center center !important;
 }
 /* 把SDK底部的Powered by coze英文改小/换色 */
@@ -428,6 +428,7 @@ setTimeout(function() {
 }, 15000);
 
 // 强制清除所有本地存储，确保每次打开都是新对话
+// 先执行一轮清除，SDK初始化后再执行一轮
 (function forceClean() {
   // 1. 清除所有localStorage（不区分key）
   localStorage.clear();
@@ -471,12 +472,15 @@ function initChat() {
   }
   
   var userId = createNewUserId();
+  // 每次生成全新会话ID，确保不加载历史对话
+  var convId = 'conv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
   
   try {
     new CozeWebSDK.WebChatClient({
       config: {
         bot_id: '7647024872517894187',
         user_id: userId,
+        conversation_id: convId,
       },
       componentProps: {
         title: '金坤尚城口腔助手',
@@ -496,6 +500,12 @@ function initChat() {
       }
     });
     
+    // 确保小章鱼按钮可见
+    setTimeout(function() {
+      var btns = document.querySelectorAll('[class*="coze"] button, [class*="coze"] [class*="bubble"], [class*="coze"] [class*="trigger"]');
+      btns.forEach(function(b) { b.style.display = ''; b.style.visibility = 'visible'; b.style.opacity = '1'; });
+    }, 3000);
+    
     document.getElementById('loadingOverlay').classList.add('hidden');
   } catch(e) {
     document.getElementById('fallbackBtn').style.display = 'inline-block';
@@ -504,6 +514,29 @@ function initChat() {
 }
 
 initChat();
+
+// SDK初始化后5秒再次清除SDK可能创建的缓存
+setTimeout(function() {
+  // 只清除Coze相关缓存，不影响访问统计
+  var keysToRemove = [];
+  for (var i = 0; i < localStorage.length; i++) {
+    var key = localStorage.key(i);
+    if (key && (key.indexOf('coze') !== -1 || key.indexOf('chat') !== -1 || key.indexOf('conversation') !== -1)) {
+      keysToRemove.push(key);
+    }
+  }
+  keysToRemove.forEach(function(k) { localStorage.removeItem(k); });
+  // 清除IndexedDB中Coze相关的数据库
+  if (window.indexedDB && window.indexedDB.databases) {
+    window.indexedDB.databases().then(function(dbs) {
+      dbs.forEach(function(db) {
+        if (db.name && (db.name.indexOf('coze') !== -1 || db.name.indexOf('chat') !== -1)) {
+          window.indexedDB.deleteDatabase(db.name);
+        }
+      });
+    }).catch(function(){});
+  }
+}, 5000);
 </script>
 
 
